@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "quote": "The only way to do great work is to love what you do.",
+    "author": "Steve Jobs"
+  },
+  {
+    "id": 2,
+    "quote": "Success is not final, failure is not fatal.",
+    "author": "Winston Churchill"
+  },
+  {
+    "id": 3,
+    "quote": "Believe you can and you're halfway there.",
+    "author": "Theodore Roosevelt"
+  },
+  {
+    "id": 4,
+    "quote": "It always seems impossible until it's done.",
+    "author": "Nelson Mandela"
+  },
+  {
+    "id": 5,
+    "quote": "The future depends on what you do today.",
+    "author": "Mahatma Gandhi"
+  },
+  {
+    "id": 6,
+    "quote": "Dream big and dare to fail.",
+    "author": "Norman Vincent Peale"
+  },
+  {
+    "id": 7,
+    "quote": "Don't watch the clock; do what it does. Keep going.",
+    "author": "Sam Levenson"
+  },
+  {
+    "id": 8,
+    "quote": "Everything you can imagine is real.",
+    "author": "Pablo Picasso"
+  },
+  {
+    "id": 9,
+    "quote": "Great things are done by a series of small things brought together.",
+    "author": "Vincent van Gogh"
+  },
+  {
+    "id": 10,
+    "quote": "The secret of getting ahead is getting started.",
+    "author": "Mark Twain"
+  }
+]
