@@ -74,6 +74,12 @@ class DashboardScreen extends StatelessWidget {
               },
               child: const Text('GetX - Quotes'),
             ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, AppRoutes.isolateInFlutter);
+              },
+              child: const Text('Isolate - Task'),
+            ),
           ],
         ),
       ),
