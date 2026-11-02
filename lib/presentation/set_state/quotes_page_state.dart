@@ -23,13 +23,9 @@ class _QuotesPageState extends State<QuotesPageState> {
   @override
   void initState() {
     super.initState();
-
     final localDataSource = QuotesLocalDataSource();
-
     final repository = QuoteRepositoryImpl(localDataSource: localDataSource);
-
     getQuotes = GetQuotes(repository);
-
     loadQuotes();
   }
 
@@ -41,7 +37,6 @@ class _QuotesPageState extends State<QuotesPageState> {
 
     try {
       final result = await getQuotes();
-
       setState(() {
         quotes = result;
         isLoading = false;
@@ -56,7 +51,6 @@ class _QuotesPageState extends State<QuotesPageState> {
 
   void nextQuote() {
     if (quotes.isEmpty) return;
-
     setState(() {
       currentIndex = (currentIndex + 1) % quotes.length;
     });
@@ -64,7 +58,6 @@ class _QuotesPageState extends State<QuotesPageState> {
 
   void previousQuote() {
     if (quotes.isEmpty) return;
-
     setState(() {
       currentIndex = (currentIndex - 1 + quotes.length) % quotes.length;
     });
@@ -72,9 +65,7 @@ class _QuotesPageState extends State<QuotesPageState> {
 
   void randomQuote() {
     if (quotes.isEmpty) return;
-
     final random = Random();
-
     setState(() {
       currentIndex = random.nextInt(quotes.length);
     });
@@ -83,18 +74,37 @@ class _QuotesPageState extends State<QuotesPageState> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Quotes'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('setState - Quotes'),
+        centerTitle: true,
+      ),
       body: buildBody(),
     );
   }
 
   Widget buildBody() {
+    final theme = Theme.of(context);
+
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
     if (errorMessage != null) {
-      return Center(child: Text(errorMessage!));
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            const SizedBox(height: 12),
+            Text(errorMessage!),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: loadQuotes,
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
     }
 
     if (quotes.isEmpty) {
@@ -104,68 +114,117 @@ class _QuotesPageState extends State<QuotesPageState> {
     final quote = quotes[currentIndex];
 
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // Index Badge
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.secondaryContainer,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              'Quote ${currentIndex + 1} of ${quotes.length}',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.onSecondaryContainer,
+                fontSize: 13,
+              ),
+            ),
+          ),
+
+          const Spacer(),
+
+          // Main Quote Card
           Card(
-            elevation: 5,
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(28),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.format_quote, size: 50),
-
-                  const SizedBox(height: 20),
-
+                  Icon(
+                    Icons.format_quote_rounded,
+                    size: 56,
+                    color: theme.colorScheme.primary.withOpacity(0.7),
+                  ),
+                  const SizedBox(height: 16),
                   Text(
                     '"${quote.quote}"',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 22,
+                    style: TextStyle(
+                      fontSize: 20,
                       fontWeight: FontWeight.w500,
+                      height: 1.4,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
-
-                  const SizedBox(height: 20),
-
-                  Text(
-                    '- ${quote.author}',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 24,
+                        height: 2,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        quote.author,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        width: 24,
+                        height: 2,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
           ),
 
-          const SizedBox(height: 30),
+          const Spacer(),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              IconButton(
-                onPressed: previousQuote,
-                icon: const Icon(Icons.arrow_back),
-              ),
-
-              ElevatedButton(
-                onPressed: randomQuote,
-                child: const Text('Random'),
-              ),
-
-              IconButton(
-                onPressed: nextQuote,
-                icon: const Icon(Icons.arrow_forward),
-              ),
-            ],
+          // Action Controls
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton.filledTonal(
+                  onPressed: previousQuote,
+                  icon: const Icon(Icons.arrow_back_rounded),
+                  tooltip: 'Previous Quote',
+                ),
+                FilledButton.icon(
+                  onPressed: randomQuote,
+                  icon: const Icon(Icons.shuffle_rounded),
+                  label: const Text('Random'),
+                ),
+                IconButton.filledTonal(
+                  onPressed: nextQuote,
+                  icon: const Icon(Icons.arrow_forward_rounded),
+                  tooltip: 'Next Quote',
+                ),
+              ],
+            ),
           ),
-
-          const SizedBox(height: 20),
-
-          Text('${currentIndex + 1} / ${quotes.length}'),
+          const SizedBox(height: 12),
         ],
       ),
     );

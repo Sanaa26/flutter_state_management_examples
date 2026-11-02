@@ -10,125 +10,164 @@ class QuoteBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return BlocBuilder<QuoteBloc, QuoteState>(
       builder: (context, state) {
-
-        // Loading
         if (state.status == QuoteStatus.loading) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
 
-        // Error
         if (state.status == QuoteStatus.failure) {
           return Center(
-            child: Text(
-              state.errorMessage ?? 'Something went wrong',
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                const SizedBox(height: 12),
+                Text(state.errorMessage ?? 'Something went wrong'),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    context.read<QuoteBloc>().add(LoadQuotes());
+                  },
+                  child: const Text('Retry'),
+                ),
+              ],
             ),
           );
         }
 
-        // No quotes
         if (state.quotes.isEmpty) {
-          return const Center(
-            child: Text('No quotes available'),
-          );
+          return const Center(child: Text('No quotes available'));
         }
 
         final quote = state.quotes[state.currentIndex];
 
         return Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Index Badge
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  'Quote ${state.currentIndex + 1} of ${state.quotes.length}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.onSecondaryContainer,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
 
+              const Spacer(),
+
+              // Main Quote Card
               Card(
-                elevation: 5,
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(28),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-
-                      const Icon(
-                        Icons.format_quote,
-                        size: 50,
+                      Icon(
+                        Icons.format_quote_rounded,
+                        size: 56,
+                        color: theme.colorScheme.primary.withOpacity(0.7),
                       ),
-
-                      const SizedBox(height: 20),
-
+                      const SizedBox(height: 16),
                       Text(
                         '"${quote.quote}"',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 22,
+                        style: TextStyle(
+                          fontSize: 20,
                           fontWeight: FontWeight.w500,
+                          height: 1.4,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
-
-                      const SizedBox(height: 20),
-
-                      Text(
-                        '- ${quote.author}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 24,
+                            height: 2,
+                            color: theme.colorScheme.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            quote.author,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            width: 24,
+                            height: 2,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const Spacer(),
 
-              Row(
-                mainAxisAlignment:
-                MainAxisAlignment.spaceEvenly,
-                children: [
-
-                  // Previous
-                  IconButton(
-                    onPressed: () {
-                      context.read<QuoteBloc>().add(
-                        PreviousQuote(),
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back,
+              // Action Controls
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton.filledTonal(
+                      onPressed: () {
+                        context.read<QuoteBloc>().add(PreviousQuote());
+                      },
+                      icon: const Icon(Icons.arrow_back_rounded),
+                      tooltip: 'Previous Quote',
                     ),
-                  ),
-
-                  // Random
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<QuoteBloc>().add(
-                        RandomQuote(),
-                      );
-                    },
-                    child: const Text('Random'),
-                  ),
-
-                  // Next
-                  IconButton(
-                    onPressed: () {
-                      context.read<QuoteBloc>().add(
-                        NextQuote(),
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.arrow_forward,
+                    FilledButton.icon(
+                      onPressed: () {
+                        context.read<QuoteBloc>().add(RandomQuote());
+                      },
+                      icon: const Icon(Icons.shuffle_rounded),
+                      label: const Text('Random'),
                     ),
-                  ),
-                ],
+                    IconButton.filledTonal(
+                      onPressed: () {
+                        context.read<QuoteBloc>().add(NextQuote());
+                      },
+                      icon: const Icon(Icons.arrow_forward_rounded),
+                      tooltip: 'Next Quote',
+                    ),
+                  ],
+                ),
               ),
-
-              const SizedBox(height: 20),
-
-              Text(
-                '${state.currentIndex + 1} / ${state.quotes.length}',
-              ),
+              const SizedBox(height: 12),
             ],
           ),
         );

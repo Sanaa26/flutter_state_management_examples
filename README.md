@@ -97,27 +97,12 @@ class QuoteCubit extends Cubit<QuoteState> {
 Call the Cubit:
 
 ```dart
-context.read<QuoteCubit>().fetchQuote();
+context.read<QuoteCubit>() fetchQuote();
 ```
 
 ## 📌 BlocBuilder
 
-```dart
-BlocBuilder<QuoteCubit, QuoteState>(
-  builder: (context, state) {
 
-    if (state is QuoteLoading) {
-      return const CircularProgressIndicator();
-    }
-
-    if (state is QuoteSuccess) {
-      return Text(state.quote);
-    }
-
-    return const SizedBox();
-  },
-);
-```
 
 ## 🏗️ Architecture
 
